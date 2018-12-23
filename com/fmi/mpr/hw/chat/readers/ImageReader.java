@@ -7,9 +7,10 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
+import java.util.Scanner;
 
 public class ImageReader extends Reader implements Runnable, IReadable {
-    private static int fileCounter = 1;
+    private static final int MAX_READ_SIZE = 1024;
 
     public ImageReader(MulticastSocket socket, InetAddress group, int port) {
         super(socket, group, port);
@@ -23,19 +24,23 @@ public class ImageReader extends Reader implements Runnable, IReadable {
     @Override
     public void run() {
         try {
-            File incomingFile = new File("file" + fileCounter++  + ".jpg");
+            System.out.println("Enter a name to incomming file");
+            Scanner input = new Scanner(System.in);
+            String newFileName = input.nextLine();
+            File incomingFile = new File(newFileName + ".jpg");
             FileOutputStream fileOutputStream = new FileOutputStream(incomingFile);
 
-            byte[] buffer = new byte[1024];
-            int lastBytesReceived = 0;
+            byte[] buffer = new byte[MAX_READ_SIZE];
+            int lastBytesReceived = 1;
             do {
 
-                DatagramPacket request = new DatagramPacket(buffer, 1024);
+                DatagramPacket request = new DatagramPacket(buffer, MAX_READ_SIZE);
                 socket.receive(request);
                 lastBytesReceived = request.getLength();
                 fileOutputStream.write(request.getData(), 0, lastBytesReceived);
                 System.out.println("received: " + lastBytesReceived);
-            } while (lastBytesReceived == 1024);
+
+            } while (lastBytesReceived == MAX_READ_SIZE);
 
             fileOutputStream.flush();
             if (fileOutputStream != null) {
