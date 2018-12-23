@@ -14,10 +14,12 @@ public class TextSender extends Sender implements ISendable {
 
     @Override
     public void send() {
-        Thread textSenderThread = new Thread(new
+        Thread threadReader = new Thread(new
                 TextReader(socket, group, port));
 
-        textSenderThread.start();
+        threadReader.start();
+
+
         Scanner input = new Scanner(System.in);
         System.out.println("You are connected and you can start typing messages now...\n");
         try {

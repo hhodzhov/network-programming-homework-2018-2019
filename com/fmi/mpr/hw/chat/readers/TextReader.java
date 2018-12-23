@@ -15,22 +15,19 @@ public class TextReader extends Reader implements Runnable, IReadable {
 
     @Override
     public void run() {
-        while(!Sender.finished)
-        {
+        while (!Sender.finished) {
             byte[] buffer = new byte[Reader.MAX_LEN];
             DatagramPacket datagram = new
-                    DatagramPacket(buffer,buffer.length,group,port);
+                    DatagramPacket(buffer, buffer.length, group, port);
             String message;
-            try
-            {
+            try {
                 socket.receive(datagram);
                 message = new
-                        String(buffer,0,datagram.getLength(),"UTF-8");
-                if(!message.startsWith(Sender.name))
+                        String(buffer, 0, datagram.getLength(), "UTF-8");
+                if (!message.startsWith(Sender.name)) {
                     System.out.println(message);
-            }
-            catch(IOException e)
-            {
+                }
+            } catch (IOException e) {
                 System.out.println("Socket is closed now");
             }
         }
