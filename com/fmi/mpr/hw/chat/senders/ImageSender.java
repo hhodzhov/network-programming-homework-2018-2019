@@ -11,9 +11,11 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Scanner;
 
+import static com.fmi.mpr.hw.chat.readers.Reader.MAX_READ_SIZE;
+
 public class ImageSender extends Sender implements ISendable {
 
-    private static final int MAX_READ_SIZE = 1024;
+//    private static final int MAX_READ_SIZE = 1024;
     public static String fullPath;
 
     public ImageSender(String host, int port) {
@@ -23,14 +25,15 @@ public class ImageSender extends Sender implements ISendable {
     @Override
     public void send() {
 
-        Thread threadReader = new Thread(new
+        System.out.println("You are about to send images");
+        Thread imageReader = new Thread(new
                 ImageReader(socket, group, port));
-        threadReader.start();
+        imageReader.start();
 
         Scanner input = new Scanner(System.in);
         try {
             while(true) {
-                System.out.println("Enter full path of the file you want to send!");
+                System.out.println("Enter full path of the image you want to send!");
                 String fullPath = input.nextLine();
 
                 if(fullPath.equals("exit")){
@@ -50,20 +53,20 @@ public class ImageSender extends Sender implements ISendable {
 
                 while ((bytesRead = in.read(buffer, 0, MAX_READ_SIZE)) > 0) {
                     System.out.println("bytes send " + bytesRead);
-                    DatagramPacket packet = new DatagramPacket(new byte[bytesRead], bytesRead);
-                    packet.setAddress(to);
-                    packet.setPort(port);
-                    packet.setData(buffer, 0, bytesRead);
+                    DatagramPacket informationToSend = new DatagramPacket(new byte[bytesRead], bytesRead);
+                    informationToSend.setAddress(to);
+                    informationToSend.setPort(port);
+                    informationToSend.setData(buffer, 0, bytesRead);
 
-                    socket.send(packet);
+                    socket.send(informationToSend);
                 }
             }
         } catch (FileNotFoundException fileNotFound) {
-            System.out.println("File not found");
+            System.out.println("Image not found");
         } catch (UnknownHostException unknownHost) {
             System.out.println("Host not found");
         } catch (IOException ioException) {
-            System.out.println("IOException");
+            System.out.println("IOException in ImageSender ");
         }
     }
 }

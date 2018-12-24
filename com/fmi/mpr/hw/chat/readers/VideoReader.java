@@ -1,6 +1,5 @@
 package com.fmi.mpr.hw.chat.readers;
 
-import com.fmi.mpr.hw.chat.senders.ImageSender;
 import com.fmi.mpr.hw.chat.senders.Sender;
 
 import java.io.File;
@@ -11,14 +10,9 @@ import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.Scanner;
 
-public class ImageReader extends Reader implements Runnable, IReadable {
-
-    private static final int MAX_READ_SIZE = 1024;
-
-    public ImageReader(MulticastSocket socket, InetAddress group, int port) {
+public class VideoReader extends Reader implements Runnable, IReadable {
+    public VideoReader(MulticastSocket socket, InetAddress group, int port) {
         super(socket, group, port);
     }
 
@@ -33,7 +27,7 @@ public class ImageReader extends Reader implements Runnable, IReadable {
             try {
 
                 LocalDateTime date = LocalDateTime.now();
-                String file = String.valueOf(date.getMinute()) + "_" + String.valueOf(date.getSecond()) + ".jpg";
+                String file = String.valueOf(date.getMinute()) + "_" + String.valueOf(date.getSecond()) + ".mp4";
                 System.out.println("Name of file : " + file);
                 File incomingFile = new File(file);
                 FileOutputStream fileOutputStream = new FileOutputStream(incomingFile);
@@ -47,16 +41,18 @@ public class ImageReader extends Reader implements Runnable, IReadable {
                     lastBytesReceived = request.getLength();
 
                     fileOutputStream.write(request.getData(), 0, lastBytesReceived);
-                    System.out.println("received: " + lastBytesReceived);
+                    System.out.println("bytes received: " + lastBytesReceived);
                 } while (lastBytesReceived == MAX_READ_SIZE);
 
                 fileOutputStream.flush();
 
             } catch (FileNotFoundException f) {
-                System.out.println("Image not found");
+                System.out.println("Video not found");
             } catch (IOException io) {
-                System.out.println("IOException in image reader");
+                System.out.println("IOException in video reader");
             }
         }
     }
+
+
 }
