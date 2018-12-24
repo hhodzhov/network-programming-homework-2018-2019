@@ -22,9 +22,9 @@ public class ImageSender extends Sender implements ISendable {
 
     @Override
     public void send() {
+
         Thread threadReader = new Thread(new
                 ImageReader(socket, group, port));
-
         threadReader.start();
 
         Scanner input = new Scanner(System.in);
@@ -45,10 +45,10 @@ public class ImageSender extends Sender implements ISendable {
                 File fileToSend = new File(fullPath);
                 FileInputStream in = new FileInputStream(fileToSend);
 
-                byte[] buffer = new byte[1024];
+                byte[] buffer = new byte[MAX_READ_SIZE];
                 int bytesRead = 0;
 
-                while ((bytesRead = in.read(buffer, 0, 1024)) > 0) {
+                while ((bytesRead = in.read(buffer, 0, MAX_READ_SIZE)) > 0) {
                     System.out.println("bytes send " + bytesRead);
                     DatagramPacket packet = new DatagramPacket(new byte[bytesRead], bytesRead);
                     packet.setAddress(to);

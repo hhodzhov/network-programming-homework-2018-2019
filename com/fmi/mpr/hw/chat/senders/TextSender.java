@@ -14,6 +14,12 @@ public class TextSender extends Sender implements ISendable {
 
     @Override
     public void send() {
+
+        Scanner sc = new Scanner(System.in);
+        System.out.print("Enter your name: ");
+        name = sc.nextLine();
+
+
         Thread threadReader = new Thread(new
                 TextReader(socket, group, port));
 

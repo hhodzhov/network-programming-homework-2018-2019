@@ -21,9 +21,6 @@ public abstract class Sender implements ISendable {
 
     public void init() throws IOException {
 
-        Scanner sc = new Scanner(System.in);
-        System.out.print("Enter your name: ");
-        name = sc.nextLine();
         socket = new MulticastSocket(port);
         group = InetAddress.getByName(host);
         socket.joinGroup(group);

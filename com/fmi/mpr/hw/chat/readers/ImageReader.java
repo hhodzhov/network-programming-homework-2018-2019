@@ -40,8 +40,6 @@ public class ImageReader extends Reader implements Runnable, IReadable {
 
                 byte[] buffer = new byte[MAX_READ_SIZE];
                 int lastBytesReceived = 0;
-                StringBuffer stringBuffer = new StringBuffer();
-                stringBuffer.append(Sender.name);
                 do {
 
                     DatagramPacket request = new DatagramPacket(buffer, MAX_READ_SIZE);
@@ -49,15 +47,10 @@ public class ImageReader extends Reader implements Runnable, IReadable {
                     lastBytesReceived = request.getLength();
 
                     fileOutputStream.write(request.getData(), 0, lastBytesReceived);
-                    stringBuffer.append("received: ");
-                    stringBuffer.append(lastBytesReceived);
-                    stringBuffer.append("\n");
                     System.out.println("received: " + lastBytesReceived);
                 } while (lastBytesReceived == MAX_READ_SIZE);
 
-                if(!stringBuffer.toString().startsWith(Sender.name)){
-                    System.out.println(stringBuffer.toString());
-                }
+
                 fileOutputStream.flush();
 
 

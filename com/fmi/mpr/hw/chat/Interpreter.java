@@ -1,6 +1,9 @@
 package com.fmi.mpr.hw.chat;
 
+import com.fmi.mpr.hw.chat.senders.ImageSender;
 import com.fmi.mpr.hw.chat.senders.Sender;
+import com.fmi.mpr.hw.chat.senders.TextSender;
+import com.fmi.mpr.hw.chat.senders.VideoSender;
 
 import java.io.IOException;
 import java.util.Map;
@@ -16,6 +19,15 @@ public class Interpreter {
 
     private void interpretCommand(String typeOfSendingCommand) throws IOException {
         Sender sender = sendFactory.get(typeOfSendingCommand);
+//        if(sender instanceof TextSender){
+//            sender.initTextGroup();
+//        }
+//        else if(sender instanceof ImageSender){
+//            sender.initImageGroup();
+//        }
+//        else if(sender instanceof VideoSender){
+//            sender.initVideoGroup();
+//        }
         sender.init();
         sender.send();
     }
