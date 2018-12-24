@@ -8,6 +8,7 @@ public abstract class Reader {
     protected InetAddress group;
     protected int port;
     protected static final int MAX_LEN = 1000;
+    //protected static int fileCount = 1;
 
     public Reader(MulticastSocket socket, InetAddress group, int port)
     {

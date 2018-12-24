@@ -15,7 +15,7 @@ import java.util.Scanner;
 public class ImageSender extends Sender implements ISendable {
 
     private static final int MAX_READ_SIZE = 1024;
-
+    public static String fullPath;
 
     public ImageSender(String host, int port) {
         super(host, port);
@@ -24,50 +24,66 @@ public class ImageSender extends Sender implements ISendable {
     @Override
     public void send() {
 
+        System.out.println("You are connected now!");
+        System.out.println("Enter full path of the file you want to send");
+        Scanner scanner = new Scanner(System.in);
+
         Thread threadReader = new Thread(new
                 ImageReader(socket, group, port));
 
+        Thread thread = new Thread(() -> {
+            //while (true) {
 
-        Thread threadSender = new Thread(() -> {
-            System.out.println("Enter full path of the file you want to send");
-            Scanner scanner = new Scanner(System.in);
-            String fullPath = scanner.nextLine();
+                fullPath = scanner.nextLine();
 
-            try {
-                File fileToSend = new File(fullPath);
-                FileInputStream in = new FileInputStream(fileToSend);
-                byte[] buffer = new byte[MAX_READ_SIZE];
-                int bytesRead = 0;
-
-                InetAddress to = InetAddress.getByName(host);
-
-
-                while ((bytesRead = in.read(buffer, 0, MAX_READ_SIZE)) > 0) {
-                    System.out.println("bytes send " + bytesRead);
-                    DatagramPacket packet = new DatagramPacket(new byte[bytesRead], bytesRead);
-                    packet.setAddress(to);
-                    packet.setPort(port);
-                    packet.setData(buffer, 0, bytesRead);
-
-                    socket.send(packet);
+                if(fullPath.equals("exit")){
+                    finished = true;
+                    try {
+                        socket.leaveGroup(group);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    socket.close();
+                    //break;
                 }
-            } catch (FileNotFoundException fileNotFound) {
-                System.out.println("File not found");
-            } catch (UnknownHostException unknownHost) {
-                System.out.println("Host not found");
-            } catch (IOException ioException) {
-                System.out.println("IOException");
-            }
-        });
+                try {
+                    File fileToSend = new File(fullPath);
+                    FileInputStream in = new FileInputStream(fileToSend);
+                    byte[] buffer = new byte[MAX_READ_SIZE];
+                    int bytesRead = 0;
 
+                    InetAddress to = InetAddress.getByName(host);
+
+
+                    while ((bytesRead = in.read(buffer, 0, MAX_READ_SIZE)) > 0) {
+                        System.out.println("bytes send " + bytesRead);
+                        DatagramPacket packet = new DatagramPacket(new byte[bytesRead], bytesRead);
+                        packet.setAddress(to);
+                        packet.setPort(port);
+                        packet.setData(buffer, 0, bytesRead);
+
+                        socket.send(packet);
+                    }
+                    
+                } catch (FileNotFoundException fileNotFound) {
+                    System.out.println("File not found");
+                } catch (UnknownHostException unknownHost) {
+                    System.out.println("Host not found");
+                } catch (IOException ioException) {
+                    System.out.println("IOException");
+                }
+            //}
+        });
+        //String fullPath = "";
         try {
-            threadSender.start();
-            threadSender.join();
+            thread.start();
+            thread.join();
             threadReader.start();
             threadReader.join();
 
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+
     }
 }
