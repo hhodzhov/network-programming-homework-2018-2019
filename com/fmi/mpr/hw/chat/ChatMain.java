@@ -6,6 +6,7 @@ import com.fmi.mpr.hw.chat.senders.TextSender;
 import com.fmi.mpr.hw.chat.senders.VideoSender;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,6 +17,10 @@ public class ChatMain {
 
 	public static void main(String[] args) throws IOException {
 		System.out.println("Test");
+
+
+//        LocalDateTime date  = LocalDateTime.now();
+//        System.out.println(date.getMinute() + ":" + date.getSecond());
 
 		Map<String, Sender> sendFactory = new HashMap<>();
 		sendFactory.put("text", new TextSender(MULTICAST_HOST, PORT_NUMBER));

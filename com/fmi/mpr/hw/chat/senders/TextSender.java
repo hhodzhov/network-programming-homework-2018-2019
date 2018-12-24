@@ -36,6 +36,7 @@ public class TextSender extends Sender implements ISendable {
                 byte[] buffer = messageToSend.getBytes();
                 DatagramPacket datagram = new
                         DatagramPacket(buffer, buffer.length, group, port);
+
                 socket.send(datagram);
             }
         } catch (SocketException socketException) {

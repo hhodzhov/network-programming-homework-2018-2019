@@ -1,7 +1,6 @@
 package com.fmi.mpr.hw.chat.senders;
 
 import com.fmi.mpr.hw.chat.readers.ImageReader;
-import com.fmi.mpr.hw.chat.readers.TextReader;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -23,67 +22,48 @@ public class ImageSender extends Sender implements ISendable {
 
     @Override
     public void send() {
-
-        System.out.println("You are connected now!");
-        System.out.println("Enter full path of the file you want to send");
-        Scanner scanner = new Scanner(System.in);
-
         Thread threadReader = new Thread(new
                 ImageReader(socket, group, port));
 
-        Thread thread = new Thread(() -> {
-            //while (true) {
+        threadReader.start();
 
-                fullPath = scanner.nextLine();
+        Scanner input = new Scanner(System.in);
+        try {
+            while(true) {
+                System.out.println("Enter full path of the file you want to send!");
+                String fullPath = input.nextLine();
 
                 if(fullPath.equals("exit")){
                     finished = true;
-                    try {
-                        socket.leaveGroup(group);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                    socket.leaveGroup(group);
                     socket.close();
-                    //break;
+                    break;
                 }
-                try {
-                    File fileToSend = new File(fullPath);
-                    FileInputStream in = new FileInputStream(fileToSend);
-                    byte[] buffer = new byte[MAX_READ_SIZE];
-                    int bytesRead = 0;
 
-                    InetAddress to = InetAddress.getByName(host);
+                InetAddress to = InetAddress.getByName(host);
 
+                File fileToSend = new File(fullPath);
+                FileInputStream in = new FileInputStream(fileToSend);
 
-                    while ((bytesRead = in.read(buffer, 0, MAX_READ_SIZE)) > 0) {
-                        System.out.println("bytes send " + bytesRead);
-                        DatagramPacket packet = new DatagramPacket(new byte[bytesRead], bytesRead);
-                        packet.setAddress(to);
-                        packet.setPort(port);
-                        packet.setData(buffer, 0, bytesRead);
+                byte[] buffer = new byte[1024];
+                int bytesRead = 0;
 
-                        socket.send(packet);
-                    }
-                    
-                } catch (FileNotFoundException fileNotFound) {
-                    System.out.println("File not found");
-                } catch (UnknownHostException unknownHost) {
-                    System.out.println("Host not found");
-                } catch (IOException ioException) {
-                    System.out.println("IOException");
+                while ((bytesRead = in.read(buffer, 0, 1024)) > 0) {
+                    System.out.println("bytes send " + bytesRead);
+                    DatagramPacket packet = new DatagramPacket(new byte[bytesRead], bytesRead);
+                    packet.setAddress(to);
+                    packet.setPort(port);
+                    packet.setData(buffer, 0, bytesRead);
+
+                    socket.send(packet);
                 }
-            //}
-        });
-        //String fullPath = "";
-        try {
-            thread.start();
-            thread.join();
-            threadReader.start();
-            threadReader.join();
-
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+            }
+        } catch (FileNotFoundException fileNotFound) {
+            System.out.println("File not found");
+        } catch (UnknownHostException unknownHost) {
+            System.out.println("Host not found");
+        } catch (IOException ioException) {
+            System.out.println("IOException");
         }
-
     }
 }
